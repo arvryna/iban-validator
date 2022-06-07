@@ -1,8 +1,17 @@
 package ibanparser
 
-import "github.com/arvryna/iban-validator/internal/util"
+import (
+	"errors"
 
+	"github.com/arvryna/iban-validator/internal/util"
+)
+
+const IbanMinSize = 5
 const IbanMaxSize = 34
+
+var errorPrefix = "Invalid IBAN number, Reason: "
+var ErrorInvalidIbanLength = errors.New(errorPrefix + " lengh should be between [5, 34]")
+var ErrorIbanNonAlphaNumeric = errors.New(errorPrefix + "contains non-alphanumeric chars")
 
 type IBANParser interface {
 	FormattedIban() string
@@ -18,13 +27,16 @@ func Init(iban string) IBANParser {
 }
 
 func (p *ibanParser) Validate() error {
-	if len(p.iban) > IbanMaxSize {
-		return ErrorLongIban
+	isValidLengh := len(p.iban) >= IbanMinSize && len(p.iban) <= IbanMaxSize
+
+	if !isValidLengh {
+		return ErrorInvalidIbanLength
 	}
 
 	if !util.IsAlphaNumeric(p.iban) {
 		return ErrorIbanNonAlphaNumeric
 	}
+
 	return nil
 }
 

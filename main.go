@@ -1,24 +1,40 @@
 package main
 
 import (
-	"fmt"
+	"net/http"
 
+	"github.com/arvryna/iban-validator/internal/ibanparser"
 	"github.com/gin-gonic/gin"
 )
+
+type IbanRequestBody struct {
+	Iban string `json:"iban"`
+}
 
 func launchServer() {
 	server := gin.New()
 	server.Use(gin.Recovery()) // default Middlewhere that catches panic and returns 500 as default
 	server.POST("/validators/iban", func(ctx *gin.Context) {
-		ctx.JSON(400, gin.H{
-			"message": "Invalid Iban number",
-		})
+		var ibanReqBody IbanRequestBody
+		err := ctx.ShouldBindJSON(&ibanReqBody)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"Error": err.Error()})
+			return
+		}
+
+		parser := ibanparser.Init(ibanReqBody.Iban)
+		if err := parser.Validate(); err != nil {
+			ctx.JSON(400, gin.H{
+				"reason": err.Error(),
+			})
+		} else {
+			ctx.JSON(200, nil)
+		}
 	})
 
 	server.Run(":9090")
 }
 
 func main() {
-	fmt.Println("IBAN-Validator")
 	launchServer()
 }
