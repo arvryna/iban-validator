@@ -2,6 +2,7 @@ package ibanparser
 
 const IbanMinSize = 5
 const IbanMaxSize = 34
+const ExpectedRemainder = 1
 
 type IBANStructure struct {
 	Name       string
