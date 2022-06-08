@@ -11,7 +11,7 @@ type IbanRequestBody struct {
 	Iban string `json:"iban"`
 }
 
-func launchServer() {
+func main() {
 	server := gin.New()
 	server.Use(gin.Recovery()) // default Middlewhere that catches panic and returns 500 as default
 	server.POST("/validators/iban", func(ctx *gin.Context) {
@@ -25,16 +25,13 @@ func launchServer() {
 		parser := ibanparser.Init(ibanReqBody.Iban)
 		if err := parser.Validate(); err != nil {
 			ctx.JSON(400, gin.H{
-				"reason": err.Error(),
+				"message": err.Error(),
 			})
 		} else {
-			ctx.JSON(200, nil)
+			ctx.JSON(200, gin.H{
+				"message": "Valid IBAN",
+			})
 		}
 	})
-
 	server.Run(":9090")
-}
-
-func main() {
-	launchServer()
 }

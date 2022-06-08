@@ -33,12 +33,21 @@ func callAPI(t *testing.T, method, url string, body []byte) (int, []byte) {
 
 func TestIbanValidatorAPI(t *testing.T) {
 	t.Run("Iban Validator", func(t *testing.T) {
-		t.Run("POST /validators/iban", func(t *testing.T) {
+		t.Run("Test Invalid IBAN", func(t *testing.T) {
 			iban := "invalid-number"
 			body := []byte(fmt.Sprintf(`{"iban":"%s"}`, iban))
 			status, _ := callAPI(t, "POST", "http://localhost:9090/validators/iban", body)
 			if status != 400 {
 				t.Errorf("expected status 400 but got %d", status)
+			}
+		})
+
+		t.Run("Test Valid IBAN", func(t *testing.T) {
+			iban := "SE45 5000 0000 0583 9825 7466" // SWEDEN Iban
+			body := []byte(fmt.Sprintf(`{"iban":"%s"}`, iban))
+			status, _ := callAPI(t, "POST", "http://localhost:9090/validators/iban", body)
+			if status != 200 {
+				t.Errorf("expected status 200 but got %d", status)
 			}
 		})
 	})
