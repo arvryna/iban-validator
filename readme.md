@@ -5,6 +5,9 @@
 - Make sure server is running before starting test `go run main.go`
 - To run all the tests: `go test -v ./...`
 
+# Supported Countries:
+- Sweden, France, Netherlands, Italy, Brazil
+
 # Usage:
 ```
 curl -X POST -H "Content-Type: application/json" \
