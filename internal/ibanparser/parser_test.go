@@ -18,7 +18,7 @@ func TestIbanAlphaNumeric(t *testing.T) {
 	}
 }
 
-func TestIban(t *testing.T) {
+func TestValidIbans(t *testing.T) {
 	ibans := [5]string{
 		"FR14 2004 1010 0505 0001 3M02 606",
 		"SE45 5000 0000 0583 9825 7466",
@@ -32,6 +32,24 @@ func TestIban(t *testing.T) {
 		err := parser.Validate()
 		if err != nil {
 			t.Error("Iban validation failed", err)
+		}
+	}
+}
+
+func TestInValidIbans(t *testing.T) {
+	ibans := [5]string{
+		"FR14 2004 1010 0505 0001 4M02 606",
+		"SE45 5000 1100 0583 9825 7466",
+		"NL91 ABNA 0417 1533 00",
+		"IT60 X054 2811 1010 0000 0123 456",
+		"BR97 0036 0305 0000 1000 9885 493P 1",
+	}
+
+	for _, iban := range ibans {
+		parser := Init(iban)
+		err := parser.Validate()
+		if err == nil {
+			t.Error("Iban:", iban, "validation failed, reason: ", err)
 		}
 	}
 }
